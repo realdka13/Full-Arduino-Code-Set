@@ -20,7 +20,7 @@ Must be called to run setup for the MAX7219 IC's
 
 /*
 Used to display 0-F on the MAX 7219
-@param matrixNumber the maxtrx to which draw the Hex number
+@param matrixNumber the maxtrix to which draw the Hex number
 @param hexCode to draw on matrix (0-15)
 */
-    	void displayHex0(int matrixNumber, in hexCode);
+    	void displayHex(int matrixNumber, in hexCode);

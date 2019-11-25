@@ -1,4 +1,4 @@
-#include <HexDisplay.h>;
+#include <HexDisplay.h>
 
 HexDisplay hexDis(2,4,3,2);
 
