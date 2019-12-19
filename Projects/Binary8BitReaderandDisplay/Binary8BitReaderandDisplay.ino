@@ -3,7 +3,7 @@
 //
 HexDisplay hexDis(2,4,3,2);
 
-String Read4MSB()
+String Read4LSB()
 {
   String BTwelv = "0";
   String BElev = "0";
@@ -15,10 +15,10 @@ String Read4MSB()
   if(digitalRead(10)){BTen = "1";}
   if(digitalRead(9)){BNine = "1";}
   
-  return (BTwelv + BElev + BTen + BNine);
+  return (BNine + BTen + BElev + BTwelv);
 }
 
-String Read4LSB()
+String Read4MSB()
 {
   String BEight = "0";
   String BSev = "0";
@@ -30,7 +30,7 @@ String Read4LSB()
   if(digitalRead(6)){BSix = "1";}
   if(digitalRead(5)){BFive = "1";}
   
-  return (BEight + BSev + BSix + BFive);
+  return (BFive + BSix + BSev + BEight);
 }
 
 void setup() 
