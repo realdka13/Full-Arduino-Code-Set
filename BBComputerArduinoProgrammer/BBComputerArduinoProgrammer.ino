@@ -29,9 +29,13 @@ const long interval = 3000; // In miliseconds (1000 ms = 1 s)
 //Address Cycle Variables
 int addr = -1;  //Start at -1 to account for iterating it the first time ie, make it zero the first time its passed to Cycle Adresses
 
+//Programs Variable
+const int numberOfProgramsSaved = 3;
+
 //Programs
-const byte Fibinachi[] = {0x51, 0x4E, 0x50, 0x4F, 0xE0, 0x1E, 0x2F, 0x4E, 0xE0, 0x1F, 0x2E, 0x70,0x63, 0x00, 0x00, 0x00};
-const byte TestSequence[] = {0x1D, 0x2E, 0x3F, 0xE0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x02, 0x08};
+const byte TestSequence[] = {0x1D, 0x2E, 0x3F, 0xE0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x02, 0x08}; //Program 1
+const byte Fibinachi[] = {0x51, 0x4E, 0x50, 0x4F, 0xE0, 0x1E, 0x2F, 0x4E, 0xE0, 0x1F, 0x2E, 0x70,0x63, 0x00, 0x00, 0x00}; //Program 2
+const byte Multiply_14_8[] = {0x1E, 0x3C, 0x76, 0x1D, 0xE0, 0xF0, 0x4E, 0x1D, 0x2F, 0x4D, 0x60, 0x00, 0x01, 0x00, 0x0E, 0x08}; //Program 3
 
 void setup() 
 {
@@ -84,14 +88,35 @@ void ListenForButton()
     addr = -1; //Reset Address for cycle function if button state has changed
     if (buttonState == HIGH) 
     {
+      if(buttonPushCounter == numberOfProgramsSaved)
+      {
+        buttonPushCounter = 0;
+      }
       buttonPushCounter++;
     } 
     delay(50); // Delay to avoid bouncing
   }
   lastButtonState = buttonState;
 
-  if (buttonPushCounter % 2 == 0 && !turnedOnPreviously && buttonState == HIGH) //*** On Press 2 *** This Is Where The program function call goes
-  {                                                                                            //*** Copy/Paste the if staements and add the prgram function plus the amount of blinks desired
+  if (buttonPushCounter == 3 && !turnedOnPreviously && buttonState == HIGH) //*** On Press 3 *** This Is Where The program function call goes
+  {                                                                                            //*** Copy/Paste the if staements and add the prgram function plus the amount of blinks desired, and on which button press
+    digitalWrite(LED_BUILTIN, HIGH);                                                           //***MAKE SURE TO UPDATE numberOfProgramsSaved
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(100);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(100);
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(100);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(100);
+    turnedOnPreviously = 1;
+    ProgramComp(Multiply_14_8);
+  }
+  else if (buttonPushCounter == 2 && !turnedOnPreviously && buttonState == HIGH) //*** On Press 2
+  {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(100);
     digitalWrite(LED_BUILTIN, LOW);
@@ -103,7 +128,7 @@ void ListenForButton()
     turnedOnPreviously = 1;
     ProgramComp(Fibinachi);
   }
-  else if(buttonPushCounter % 1 == 0 && !turnedOnPreviously && buttonState == HIGH) //*** On Press 1
+  else if(buttonPushCounter == 1 && !turnedOnPreviously && buttonState == HIGH) //*** On Press 1
   {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(100);

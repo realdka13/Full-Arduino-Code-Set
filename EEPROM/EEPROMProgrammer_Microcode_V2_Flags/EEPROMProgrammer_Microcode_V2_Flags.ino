@@ -45,11 +45,11 @@ uint16_t UCODE_TEMPLATE[16][8] = {
   { MI|CO,  RO|II|CE,  IO|J,   0,      0,           0, 0, 0 },   // 0110 - JMP - Jump to, Memory Lcoation
   { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 0111 - JC - Carry Jump, Memory Location
   { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1000 - JZ - Zero Jump, Memory Location
-  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1001
-  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1010
-  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1011
-  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1100
-  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1101
+  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1001 - JNC - Jump if not carry, Memory Location*******
+  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1010 - JNZ - Jump if not zero, Memory Location*******
+  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1011 - INC - Incriment by a 4 bit number, Value to Inc******
+  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1100 - DEC - Decrement by a 4 bit number, Value to Dec******
+  { MI|CO,  RO|II|CE,  0,      0,      0,           0, 0, 0 },   // 1101 - DSP - Outputs Value of Specific Memory Location, Memory Location******
   { MI|CO,  RO|II|CE,  AO|OI,  0,      0,           0, 0, 0 },   // 1110 - OUT - Display Output, Dont Care
   { MI|CO,  RO|II|CE,  HLT,    0,      0,           0, 0, 0 },   // 1111 - HLT - Halt Operaton, Dont Care
 };
