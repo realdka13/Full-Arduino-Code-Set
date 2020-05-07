@@ -22,6 +22,14 @@ int buttonState = 0;
 int lastButtonState = 0;
 bool turnedOnPreviously = 0;
 
+//Time Variables
+unsigned long previousMillis = 0;
+const long interval = 3000; // In miliseconds (1000 ms = 1 s)
+
+//Address Cycle Variables
+int addr = -1;  //Start at -1 to account for iterating it the first time ie, make it zero the first time its passed to Cycle Adresses
+
+//Programs
 const byte Fibinachi[] = {0x51, 0x4E, 0x50, 0x4F, 0xE0, 0x1E, 0x2F, 0x4E, 0xE0, 0x1F, 0x2E, 0x70,0x63, 0x00, 0x00, 0x00};
 const byte TestSequence[] = {0x1D, 0x2E, 0x3F, 0xE0, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x02, 0x08};
 
@@ -47,9 +55,24 @@ void setup()
 
 void loop() 
 { 
-//  //***** Program *****
-  //CycleAddresses();
+////***** Program *****
   ListenForButton();
+
+  //***Cycle through Addresses if enough time has passed ()
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) 
+  {
+    previousMillis = currentMillis;
+    if(addr == 15)
+    {
+      addr = 0;
+    }
+    else
+    {
+      addr += 1;
+    }
+    CycleAddresses(addr);
+  }
 }
 
 void ListenForButton()
@@ -58,6 +81,7 @@ void ListenForButton()
   if (buttonState != lastButtonState) 
   {
     turnedOnPreviously = 0;
+    addr = -1; //Reset Address for cycle function if button state has changed
     if (buttonState == HIGH) 
     {
       buttonPushCounter++;
@@ -101,13 +125,11 @@ void ProgrammingComplete()
   }
 }
 
-void CycleAddresses()
+void CycleAddresses(int addr)
 {
-  //Enable Output
-  digitalWrite(outputEn,LOW);
+    //Enable Output
+    digitalWrite(outputEn,LOW);
 
-  for(int addr = 0; addr <= 15; addr++)
-  {
     //Set Addr
     shiftOut(addrIn,shiftAddrClk,LSBFIRST,addr);
 
@@ -117,9 +139,6 @@ void CycleAddresses()
     digitalWrite(outputClk,HIGH);
     delay(1);
     digitalWrite(outputClk,LOW);
-
-    delay(4000);
-  }
 }
 
 void ProgramComp(byte prgArray[])
