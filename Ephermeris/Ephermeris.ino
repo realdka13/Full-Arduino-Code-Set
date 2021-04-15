@@ -16,7 +16,7 @@ bool hourSelected = false;
 bool minuteSelected = false;
 
 int planetCounter = 0; //0=Sun,1=Mercury,2=Venus,3=Earth,4=Mars,5=Jupiter,6=Saturn,7=Uranus,8=Neptune
-int statCounter = 1; //1=...,2=...,3=...,4=...,5=...  *** Once I know how many there are, remember to change the amount in the button functions***
+int statCounter = 1; //1=Dist From Earth,2=Rise,3=Set,4=RightAscension,5=Declination  *** Once I know how many there are, remember to change the amount in the button functions***
 int monthCounter = 1;
 int dayCounter = 1;
 int yearCounter = 2020;
@@ -31,9 +31,10 @@ bool upButtonPressed = false;
 
 //Arrays
 char *planets[] = {"Sun","Mercury","Venus","Earth","Mars","Jupiter","Saturn","Uranus","Neptune"};
-char *stats[] = {"Stat1","Stat2","Stat3","Stat4","Stat5"};
+char *stats[] = {"Dist From Earth:","Rise:","Set:","Right Ascension:","Declination:"};
 int date[] = {01,01,2020};
 int times[] = {00,00};
+bool planetLEDs[] = {true, false, false, true, true, true, true, false, false};
 
 //Button Inturrupts, these should only debounce and set the button state variables
 void acceptButton(){
@@ -114,7 +115,6 @@ void Accept(){
     else if(selectionScreen == 1){selectionScreen = 2;}
     Serial.print("acceptButton Pressed : selectionScreen: ");
     Serial.println(selectionScreen);
-    planetCounter = 0; //Reset to begining
     PrintLCD();
     acceptButtonPressed = false;
 }
@@ -125,6 +125,7 @@ void Back(){
     }
     else if(selectionScreen == 1){
       selectionScreen = 0;
+      planetCounter = 0; //Reset to begining
       monthSelected = false;
       daySelected = false;
       yearSelected = false;
@@ -259,7 +260,7 @@ void MoveUp(){
     upButtonPressed = false;
 }
 
-//LCD Functions
+//Functions
 void PrintLCD(){
   lcd.clear();
   if(selectionScreen == 0){
@@ -316,42 +317,99 @@ void PrintLCD(){
     Serial.println(times[1]);
   }
   else if(selectionScreen == 2){
+    Serial.print("Planet Counter is: ");
+    Serial.println(planetCounter);
+    SolarSystemObject solarSystemObject = Ephemeris::solarSystemObjectAtDateAndTime(planetCounter,date[0],date[1],date[2],times[0],times[1], 0);
+    lcd.setCursor(0,0);
     lcd.print(stats[statCounter - 1]);
+    lcd.setCursor(0,1);
+    
+    if(statCounter == 1){
+      Serial.print(solarSystemObject.distance);
+      lcd.print(solarSystemObject.distance);
+      lcd.print(" AU");
+    }
+//    else if(statCounter == 2){
+//    int hour = 0,minute = 0;
+//    Ephemeris::floatingHoursToHoursMinutesSeconds(solarSystemObject.rise, &hour, &minute, 0);
+//    lcd.print(hour);
+//    lcd.print(":");
+//    lcd.print(minute);
+//    Serial.print(hour);
+//    Serial.print(":");
+//    Serial.print(minute);
+//    }
+//    else if(statCounter == 3){
+//    }
+//    else if(statCounter == 4){
+//      Serial.Print();
+//      lcd.print();
+//      lcd.print();
+//    }
+//    else if(statCounter == 5){
+//      Serial.Print();
+//      lcd.print();
+//      lcd.print();
+//    }
+  }
+}
+void CheckLEDs(bool planets[]){
+  int pin = 12;
+  for(int i = 0; i < 9; i++)
+  {
+    if(planets[i] == true){digitalWrite(pin,HIGH);}
+    else {digitalWrite(pin,LOW);}
+    pin--;
   }
 }
 
-
-
-
-
 void setup() {
 Serial.begin(9600);
+
+//LCD Setup
 lcd.init();
 lcd.backlight();
 lcd.setCursor(0,0);//(Col,Row)
 
+//Inturrupt Pins
 pinMode(acceptButtonPin, INPUT_PULLUP);
 pinMode(backButtonPin, INPUT_PULLUP);
 pinMode(downButtonPin, INPUT_PULLUP);
 pinMode(upButtonPin, INPUT_PULLUP);
-
 attachInterrupt(digitalPinToInterrupt(acceptButtonPin),acceptButton,FALLING);
 attachInterrupt(digitalPinToInterrupt(backButtonPin),backButton,FALLING);
 attachInterrupt(digitalPinToInterrupt(downButtonPin),downButton,FALLING);
 attachInterrupt(digitalPinToInterrupt(upButtonPin),upButton,FALLING);
 
+//LED Pins
+for(int pin=12;pin>3;pin--)
+{
+  pinMode(pin,OUTPUT);
+  digitalWrite(pin,LOW);
+}
+
+//Set Variables
 int planetCounter = 0;
 int stat = 0;
 bool selectionScreen = true;
 
+//Ephemeris Setup
+Ephemeris::setLocationOnEarth(39,5,59,  // Lat
+                              76,42,50); // Lon
+Ephemeris::flipLongitude(true); //East is negative and West is positive
+Ephemeris::setAltitude(146);  //Set altitude to improve rise and set precision
+
+//Finish Setup
 Serial.println("Starting...");
 lcd.print("Starting...");
 lcd.setCursor(0,1);
 lcd.print("Press Back Button...");
+
 }
 void loop() {
   if(acceptButtonPressed == true){Accept();}
   else if(backButtonPressed == true){Back();}
   else if(downButtonPressed == true){MoveDown();}
   else if(upButtonPressed == true){MoveUp();}
+  CheckLEDs(planetLEDs);
 }
